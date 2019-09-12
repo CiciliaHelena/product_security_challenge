@@ -1,0 +1,4 @@
+#ignore the binary output
+src
+#but not the folder
+!src/
