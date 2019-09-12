@@ -1,0 +1,69 @@
+package app
+
+import (
+	"database/sql"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+	"log"
+)
+
+var database *sql.DB
+
+type UserDetails struct {
+	username string
+	email    string
+	password string
+}
+
+func NewUserDetails(username, email, password string) *UserDetails {
+	return &UserDetails{
+		username: username,
+		email:    email,
+		password: password,
+	}
+}
+
+func init() {
+	var err error
+	var statement *sql.Stmt
+
+	database, err = sql.Open("sqlite3", "./data.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	statement, err = database.Prepare("CREATE TABLE IF NOT EXISTS users (username TEXT, email TEXT, password TEXT)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func (ud *UserDetails) Store() (err error) {
+	statement, err := database.Prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = statement.Exec(ud.username, ud.email, ud.password)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// debugging purpose
+	rows, _ := database.Query("SELECT username, email, password FROM users")
+	var username string
+	var email string
+	var password string
+	for rows.Next() {
+		rows.Scan(&username, &email, &password)
+		fmt.Println((username) + ": " + email + " " + password)
+	}
+
+	return
+}
