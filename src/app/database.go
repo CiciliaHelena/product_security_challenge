@@ -69,7 +69,31 @@ func (ud *UserDetails) Store() (err error) {
 	return
 }
 
+func (ud *UserDetails) Authenticate() bool {
+	statement, err := database.Prepare("SELECT password FROM users WHERE username = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	row := statement.QueryRow(ud.username)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var hashedPassword string
+	row.Scan(&hashedPassword)
+	return comparePassword(ud.password, hashedPassword)
+}
+
 func hashPassword(password string) string {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
 	return string(hashedPassword)
+}
+
+func comparePassword(password, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err == nil {
+		return true
+	}
+	return false
 }
