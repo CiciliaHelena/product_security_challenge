@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 )
 
@@ -50,7 +51,7 @@ func (ud *UserDetails) Store() (err error) {
 		log.Fatal(err)
 	}
 
-	_, err = statement.Exec(ud.username, ud.email, ud.password)
+	_, err = statement.Exec(ud.username, ud.email, hashPassword(ud.password))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -66,4 +67,9 @@ func (ud *UserDetails) Store() (err error) {
 	}
 
 	return
+}
+
+func hashPassword(password string) string {
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 10)
+	return string(hashedPassword)
 }
