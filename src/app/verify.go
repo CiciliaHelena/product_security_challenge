@@ -2,6 +2,8 @@ package app
 
 import (
 	"errors"
+	hibp "github.com/mattevans/pwned-passwords"
+	"log"
 	"regexp"
 )
 
@@ -40,5 +42,19 @@ func ValidatePassword(password1, password2 string) error {
 	if len(password1) > 40 {
 		return errors.New("Password: exceed 100 characters")
 	}
+	if pwnedPassword(password1) {
+		return errors.New("Password: leaked on the internet!")
+	}
 	return nil
+}
+
+func pwnedPassword(password string) bool {
+	client := hibp.NewClient()
+
+	pwned, err := client.Pwned.Compromised(password)
+	if err != nil {
+		log.Print("Pwned check failed")
+	}
+
+	return pwned
 }
