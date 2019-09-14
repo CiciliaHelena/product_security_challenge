@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html"
 	"html/template"
 	"log"
 	"net/http"
@@ -31,20 +32,31 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 	form := SignupForm{
 		username:  r.FormValue("username"),
 		email:     r.FormValue("email"),
-		password1: r.FormValue("password1"),
-		password2: r.FormValue("password2"),
+		password1: html.EscapeString(r.FormValue("password1")),
+		password2: html.EscapeString(r.FormValue("password2")),
 	}
 
-	log.Println(r.URL.Path, form.username, form.email, form.password1, form.password2)
+	var ok bool
+	ok = true
+	if err := app.ValidateEmail(form.email); err != nil {
+		log.Print(err)
+		ok = false
+	}
+	if err := app.ValidateUsername(form.username); err != nil {
+		log.Print(err)
+		ok = false
+	}
+	if err := app.ValidatePassword(form.password1, form.password2); err != nil {
+		log.Print(err)
+		ok = false
+	}
 
-	if form.password1 != form.password2 {
-		fmt.Fprintf(w, "Password rejected!")
+	if ok {
+		data := app.NewUserDetails(form.username, form.email, form.password1)
+		data.Store()
+		fmt.Fprintf(w, "Signup success!")
 		return
 	}
-
-	data := app.NewUserDetails(form.username, form.email, form.password1)
-	data.Store()
-
 	tmpl.Execute(w, form)
 }
 
@@ -57,7 +69,13 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	form := LoginForm{
 		username: r.FormValue("username"),
-		password: r.FormValue("password"),
+		password: html.EscapeString(r.FormValue("password")),
+	}
+
+	if err := app.ValidateUsername(form.username); err != nil {
+		log.Print(err)
+		tmpl.Execute(w, form)
+		return
 	}
 
 	data := app.NewUserDetails(form.username, "", form.password)
@@ -65,7 +83,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Login success!")
 		return
 	}
+
 	tmpl.Execute(w, form)
+	fmt.Fprintf(w, "Invalid username or password.")
 }
 
 func main() {
