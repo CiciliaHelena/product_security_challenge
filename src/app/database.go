@@ -2,7 +2,6 @@ package app
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -55,16 +54,7 @@ func (ud *UserDetails) Store() (err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// debugging purpose
-	rows, _ := database.Query("SELECT username, email, password FROM users")
-	var username string
-	var email string
-	var password string
-	for rows.Next() {
-		rows.Scan(&username, &email, &password)
-		fmt.Println((username) + ": " + email + " " + password)
-	}
+	log.Print("Store to database " + ud.username + ": " + ud.email + " | " + ud.password)
 
 	return
 }
