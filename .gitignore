@@ -1,6 +1,2 @@
-#ignore the binary output
-src
-#but not the folder
-!src/
 #ignore all db
 *db
