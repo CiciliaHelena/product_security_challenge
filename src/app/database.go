@@ -75,13 +75,12 @@ func (ud *UserDetails) Authenticate() bool {
 		log.Fatal(err)
 	}
 
-	row := statement.QueryRow(ud.username)
+	var hashedPassword string
+	err = statement.QueryRow(ud.username).Scan(&hashedPassword)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var hashedPassword string
-	row.Scan(&hashedPassword)
 	return comparePassword(ud.password, hashedPassword)
 }
 
