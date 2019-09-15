@@ -1,51 +1,50 @@
 package app
 
 import (
-	"errors"
 	hibp "github.com/mattevans/pwned-passwords"
 	"log"
 	"regexp"
 )
 
-func ValidateEmail(email string) error {
+func ValidateEmail(email string) string {
 	regex := regexp.MustCompile(`^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$`)
 	if !regex.MatchString(email) {
-		return errors.New("Email: wrong format")
+		return ("Email: wrong format")
 	}
 	if len(email) > 40 {
-		return errors.New("Email: exceed 40 characters")
+		return ("Email: exceed 40 characters")
 	}
-	return nil
+	return ""
 }
 
-func ValidateUsername(username string) error {
+func ValidateUsername(username string) string {
 	regex := regexp.MustCompile(`^[a-zA-Z0-9_.]{8,40}$`)
 	if !regex.MatchString(username) {
-		return errors.New("Username: wrong format")
+		return ("Username: wrong format")
 	}
 	if len(username) < 8 {
-		return errors.New("Username: minimum 8 characters")
+		return ("Username: minimum 8 characters")
 	}
 	if len(username) > 40 {
-		return errors.New("Username: exceed 40 characters")
+		return ("Username: exceed 40 characters")
 	}
-	return nil
+	return ""
 }
 
-func ValidatePassword(password1, password2 string) error {
+func ValidatePassword(password1, password2 string) string {
 	if password1 != password2 {
-		return errors.New("Password mismatch")
+		return ("Password mismatch")
 	}
 	if len(password1) < 8 {
-		return errors.New("Password: minimum 10 characters")
+		return ("Password: minimum 10 characters")
 	}
 	if len(password1) > 40 {
-		return errors.New("Password: exceed 100 characters")
+		return ("Password: exceed 100 characters")
 	}
 	if pwnedPassword(password1) {
-		return errors.New("Password: leaked on the internet!")
+		return ("Password: leaked on the internet!")
 	}
-	return nil
+	return ""
 }
 
 func pwnedPassword(password string) bool {

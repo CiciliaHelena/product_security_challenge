@@ -31,6 +31,11 @@
             </div>
         </form>
         <p class="text-center"><a href="#">Create an Account</a></p>
+            {{ if .Err }}
+                <h4 style="color:#FF0000"; class="text-center">
+                {{ .Err }}
+                </h4>
+            {{ end }}
     </div>
 </body>
 

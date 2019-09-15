@@ -33,6 +33,13 @@
             </div>
         </form>
     </div>
+    {{ if .Errs }}
+        {{range .Errs}}
+            <li style="color:#FF0000"; class="text-center">
+                {{ . }}
+            </li>
+        {{end}}
+    {{ end }}
 </body>
 
 </html>
