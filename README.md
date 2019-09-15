@@ -1,6 +1,8 @@
 # Zendesk Product Security
 ### The Zendesk Product Security Challenge
 
+>>Project README is [here](src/README.md)
+
 Hello friend,
 
 We are super excited that you want to be part of the Product Security team at Zendesk.
