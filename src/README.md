@@ -8,11 +8,10 @@ make sure to have go installed
 
 ## Deployment Setup
 
-Fetch and build the project, then run
+Fetch and run the project
 ```
 git clone https://github.com/CiciliaHelena/product_security_challenge
 cd product_security_challenge/src
-go build
 ./src
 ```
 
