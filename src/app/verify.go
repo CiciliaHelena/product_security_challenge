@@ -14,6 +14,18 @@ func ValidateEmail(email string) string {
 	if len(email) > 40 {
 		return ("Email: exceed 40 characters")
 	}
+
+	statement, err := database.Prepare("SELECT email FROM users WHERE email = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var check string
+	err = statement.QueryRow(email).Scan(&check)
+	if err == nil {
+		return "Email: email taken by another account"
+	}
+
 	return ""
 }
 
@@ -28,6 +40,18 @@ func ValidateUsername(username string) string {
 	if len(username) > 40 {
 		return ("Username: exceed 40 characters")
 	}
+
+	statement, err := database.Prepare("SELECT username FROM users WHERE username = ?")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var check string
+	err = statement.QueryRow(username).Scan(&check)
+	if err == nil {
+		return "Username: username taken by another account"
+	}
+
 	return ""
 }
 
